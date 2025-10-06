@@ -7,10 +7,12 @@ import AdminLogin from "./Adminpanel/Adminlogin.jsx";
 import AdminDashboard from "./Adminpanel/Dashboard.jsx";
 import MyTickets from "./Employpanel/Mytickets.jsx";
 import MyProfile from "./Employpanel/Profile.jsx";
+import Layout from "./Employpanel/Outlet.jsx"; // <-- Import your layout
+
 function App() {
   return (
     <div>
-         <Toaster
+      <Toaster
         position="top-right"
         toastOptions={{
           success: { style: { background: "#10B981", color: "white" } },
@@ -21,15 +23,17 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<ChooseRole />} />
-          <Route path="/Mainscreen" element={<Mainscreen />} />
-          <Route path="/Mytickets" element={<MyTickets />} />
-          <Route path="/Myprofile" element={<MyProfile />} />
+          {/* Employee routes inside Layout */}
+          <Route element={<Layout />}>
+            <Route path="/Mainscreen" element={<Mainscreen />} />
+            <Route path="/Mytickets" element={<MyTickets />} />
+            <Route path="/Myprofile" element={<MyProfile />} />
+          </Route>
           <Route path="/employee-login" element={<Login />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
         </Routes>
       </Router>
-    
     </div>
   );
 }

@@ -94,29 +94,23 @@ function MyProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gray-800 text-white px-6 py-4 shadow-lg border-b-2 border-yellow-400">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-              <span className="text-gray-900 font-black text-lg">AS</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-bold text-lg text-yellow-400">Ayushmaan</span>
-              <span className="font-bold text-lg text-white">Solutions</span>
-            </div>
-          </div>
-          <nav className="hidden md:flex space-x-8 font-medium">
-            <button className="hover:text-yellow-400 transition">My Tickets</button>
-            <button className="hover:text-yellow-400 transition">Raise Ticket</button>
-            <button className="text-yellow-400 border-b-2 border-yellow-400 pb-1">Profile</button>
-          </nav>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Decorative circular images */}
+      <img
+        src="/rolebg.jpeg"
+        alt="Decorative"
+        className="absolute sm:block hidden top-24  left-8 w-48 h-48 rounded-full object-cover shadow-lg z-0"
+        style={{ border: "4px solid #FBBF24" }}
+      />
+      <img
+        src="/illustration3.jpeg"
+        alt="Decorative"
+        className="absolute bottom-8 sm:block hidden right-8 w-48 h-48 rounded-full object-cover shadow-lg z-0"
+        style={{ border: "4px solid #D1D5DB" }}
+      />
+     
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-8">
+      <main className="max-w-4xl mx-auto px-6 py-8 relative z-10">
         <div className="space-y-5">
           {/* Header */}
           <div>
