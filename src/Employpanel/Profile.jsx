@@ -112,7 +112,7 @@ function MyProfile() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-8 relative z-10">
         <div className="space-y-5">
-          {/* Header */}
+      
           <div>
             <h1 className="text-2xl font-semibold text-gray-900 mb-1">My Profile</h1>
             <p className="text-sm text-gray-500">Manage your account information</p>

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { LogIn, ArrowRight, CheckCircle2 } from "lucide-react";
+import { LogIn, ArrowRight, CheckCircle2, ArrowRightFromLine } from "lucide-react";
 import { useMutation } from "convex/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { div } from "framer-motion/client";
 
 function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -56,11 +57,9 @@ function AdminLogin() {
       <header className="bg-gray-800 text-white px-4 sm:px-6 py-4 shadow-lg border-b-2 border-yellow-400 relative z-20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-gray-900 font-black text-base sm:text-lg">
-                AS
-              </span>
-            </div>
+           <Link to="/"> <div className="w-9 h-9 sm:w-10 sm:h-10 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0">
+              <img src="/logoart.png" className="rounded-sm" alt="logo" srcset="" />
+            </div> </Link>
             <div className="flex flex-col sm:flex-row sm:items-center">
               <span className="font-bold text-base sm:text-lg text-yellow-400 leading-tight">
                 Ayushman
@@ -74,9 +73,11 @@ function AdminLogin() {
           {isAuthenticated && (
             <button
               onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md"
+              className="flex cursor-pointer
+               items-center gap-2 px-5 py-2 bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-semibold rounded-full shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
             >
-              Logout
+              <ArrowRightFromLine className="w-5 h-5" />
+              <span className="tracking-wide">Logout</span>
             </button>
           )}
         </div>
@@ -177,7 +178,7 @@ function AdminLogin() {
                 <div className="space-y-3">
                   <button
                     onClick={() => navigate("/admindashboard")}
-                    className="w-full flex items-center justify-center space-x-2 bg-yellow-400 text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-yellow-500 transition-all shadow-lg hover:shadow-xl group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                    className="cursor-pointer w-full flex items-center justify-center space-x-2 bg-yellow-400 text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-yellow-500 transition-all shadow-lg hover:shadow-xl group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

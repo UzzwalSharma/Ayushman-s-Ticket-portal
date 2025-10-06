@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState  } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useQuery ,useMutation } from "convex/react";
 import { Clock, CheckCircle2, AlertCircle, XCircle, FileText, Trash, Tag, Filter, TrendingUp, Trash2 } from "lucide-react";
@@ -86,17 +86,7 @@ function MyTickets() {
   if (tickets === undefined) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-gray-800 text-white px-6 py-4 shadow-lg border-b-2 border-yellow-400">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-              <span className="text-gray-900 font-black text-lg">AS</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="font-bold text-lg text-yellow-400">Ayushmaan</span>
-              <span className="font-bold text-lg text-white">Solutions</span>
-            </div>
-          </div>
-        </header>
+     
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -271,7 +261,9 @@ function MyTickets() {
                             <div className="flex-shrink-0">{getStatusIcon(ticket.status)}</div>
                             <div className="min-w-0 flex-1">
                               <p className="text-sm font-medium text-gray-900 truncate">{ticket.title}</p>
-                              <p className="text-xs text-gray-500 truncate">{ticket.description}</p>
+                              {/* <p className="text-xs text-gray-500 truncate break-words whitespace-break">{ticket.description}</p> */}
+
+                              
                             </div>
                           </div>
                         </td>

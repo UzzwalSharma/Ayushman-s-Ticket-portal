@@ -53,15 +53,15 @@ const isLoading = ticketsQuery === undefined;
     }
   };
 
-  const filteredTickets = tickets.filter((tickets) => {
+  const filteredTickets = tickets.filter((ticket) => {
     const matchesSearch =
-      tickets.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tickets.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tickets.employee?.toLowerCase().includes(searchQuery.toLowerCase());
+      (ticket.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       ticket._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       ticket.reporterName?.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesStatus =
-      statusFilter === "all" || tickets.status === statusFilter;
+      statusFilter === "all" || ticket.status === statusFilter;
     const matchesCategory =
-      categoryFilter === "all" || tickets.category === categoryFilter;
+      categoryFilter === "all" || ticket.category === categoryFilter;
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
@@ -129,7 +129,7 @@ const isLoading = ticketsQuery === undefined;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-200">
       {/* Header */}
       <header className="bg-gray-800 text-white px-6 py-4 shadow-lg border-b-2 border-yellow-400">
         <div className="max-w-7xl mx-auto flex justify-between items-center">

@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import { Ticket, PlusCircle, User, User2Icon } from "lucide-react"; // Add icons
 
 function Layout() {
@@ -14,9 +14,10 @@ function Layout() {
       <header className="bg-gray-800 text-white px-6 py-4 shadow-lg border-b-2 border-yellow-400">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-            <img src="/logoart.png" alt="" srcset="" />
-            </div>
+              <Link to="/">
+            <div className="cursor-pointer w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
+        <img src="/logoart.png" alt="" srcset="" />
+            </div></Link> 
             <div className="flex items-center gap-1">
               <span className="font-bold text-lg text-yellow-400">Ayushmaan</span>
               <span className="font-bold text-lg text-white">Solutions</span>

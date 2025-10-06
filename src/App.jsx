@@ -9,8 +9,9 @@ import AdminDashboard from "./Adminpanel/Dashboard.jsx";
 import MyTickets from "./Employpanel/Mytickets.jsx";
 import MyProfile from "./Employpanel/Profile.jsx";
 import Layout from "./Employpanel/Outlet.jsx";
-import ProtectedRoute from "./Employpanel/ProtectedRoute.jsx"; // <-- Import it
+import ProtectedRoute from "./Employpanel/ProtectedRoute.jsx"; 
 import ProtectedRouteadmin from "./Adminpanel/ProtectedRouteadmin.jsx";
+
 function App() {
   return (
     <div>
@@ -26,7 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ChooseRole />} />
 
-          {/* Employee routes inside Layout */}
+      
           <Route element={<Layout />}>
             <Route
               path="/Mainscreen"
@@ -59,10 +60,9 @@ function App() {
           
           <Route path="/admindashboard" element={
             <ProtectedRouteadmin>
- <AdminDashboard />
+              <AdminDashboard />
             </ProtectedRouteadmin>
-           
-            } />
+          } />
         </Routes>
       </Router>
     </div>
