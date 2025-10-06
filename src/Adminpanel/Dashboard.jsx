@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useQuery,useMutation } from "convex/react";
-
+import { useQuery, useMutation } from "convex/react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
   Search,
   Filter,
@@ -10,6 +11,8 @@ import {
   AlertCircle,
   X,
   FileText,
+  LogOut,
+  User,
 } from "lucide-react";
 import {
   LineChart,
@@ -23,11 +26,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
- 
   ResponsiveContainer,
 } from "recharts";
-
-
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("tickets");
@@ -36,29 +36,28 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
-const ticketsQuery = useQuery("Fetchall:all"); 
-const tickets = ticketsQuery || [];
 
-// Convex mutation
-const updateTicketStatus = useMutation("updateStatus:updateStatus");
+  const ticketsQuery = useQuery("Fetchall:all");
+  const tickets = ticketsQuery || [];
+const isLoading = ticketsQuery === undefined;
+  // Convex mutation
+  const updateTicketStatus = useMutation("updateStatus:updateStatus");
 
-const handleStatusChange = async (ticket_id, newStatus) => {
-  try {
-    await updateTicketStatus({ id: ticket_id, status: newStatus });
-  } catch (error) {
-    console.error("Failed to update ticket status:", error);
-  }
-};
-
-
-
-
+  const handleStatusChange = async (ticket_id, newStatus) => {
+    try {
+      await updateTicketStatus({ id: ticket_id, status: newStatus });
+      toast.success("Ticket status updated!");
+    } catch (error) {
+      toast.error("Failed to update ticket status");
+      console.error("Failed to update ticket status:", error);
+    }
+  };
 
   const filteredTickets = tickets.filter((tickets) => {
     const matchesSearch =
       tickets.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tickets.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tickets.employee.toLowerCase().includes(searchQuery.toLowerCase());
+      tickets.employee?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus =
       statusFilter === "all" || tickets.status === statusFilter;
     const matchesCategory =
@@ -104,6 +103,31 @@ const handleStatusChange = async (ticket_id, newStatus) => {
     }
   };
 
+  //logout
+  const logoutMutation = useMutation("logout:logout");
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem("sessionToken");
+
+    if (token) {
+      try {
+        await logoutMutation({ token });
+        toast.success("Logged out successfully");
+      } catch (err) {
+        toast.error("Logout failed");
+        console.error(err);
+      }
+    }
+
+    // Clear localStorage
+    localStorage.removeItem("adminLoggedIn");
+    localStorage.removeItem("sessionToken");
+
+    // Redirect
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -111,7 +135,7 @@ const handleStatusChange = async (ticket_id, newStatus) => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-           <img src="/logoart.png" alt="" />
+              <img src="/logoart.png" alt="" className="w-8 h-8 rounded" />
             </div>
             <div className="flex items-center gap-1">
               <span className="font-bold text-lg text-yellow-400">
@@ -119,15 +143,32 @@ const handleStatusChange = async (ticket_id, newStatus) => {
               </span>
               <span className="font-bold text-lg text-white">Solutions</span>
             </div>
-           
           </div>
-          <button className="px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded hover:bg-gray-600 transition">
-            Logout
-          </button>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-2 text-yellow-300 font-semibold text-base">
+              <User className="w-5 h-5" />
+              Welcome, Admin!
+            </span>
+            <button
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold cursor-pointer rounded transition shadow"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </button>
+          </div>
         </div>
       </header>
-
-      <main className="max-w-7xl mx-auto px-6 py-8">
+ {isLoading ? (
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-gray-200 border-t-gray-800 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-sm font-medium">Loading tickets...</p>
+        </div>
+      </div>
+    ) : (
+    <main className="max-w-7xl mx-auto px-6 py-8">
+    
         {/* Tabs */}
         <div className="mb-6 flex gap-2 border-b border-gray-200">
           <button
@@ -168,17 +209,7 @@ const handleStatusChange = async (ticket_id, newStatus) => {
                 </div>
               </div>
 
-              <div className="bg-white rounded border border-gray-200 p-3">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-500" />
-                  <div>
-                    <p className="text-xs text-gray-500">Pending</p>
-                    <p className="text-xl font-semibold text-amber-600">
-                      {stats.pending}
-                    </p>
-                  </div>
-                </div>
-              </div>
+             
 
               <div className="bg-white rounded border border-gray-200 p-3">
                 <div className="flex items-center gap-2">
@@ -225,7 +256,6 @@ const handleStatusChange = async (ticket_id, newStatus) => {
                   <Filter className="w-4 h-4" />
                   Filters
                 </button>
-               
               </div>
 
               {showFilters && (
@@ -234,12 +264,11 @@ const handleStatusChange = async (ticket_id, newStatus) => {
                     <label className="block text-xs font-medium text-gray-600 mb-1">
                       Status
                     </label>
-                  <select
-  value={ticket.status}
-  onChange={(e) =>
-    handleStatusChange(ticket._id, e.target.value)
-  }
->
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none"
+                    >
                       <option value="all">All Status</option>
                       <option value="pending">Pending</option>
                       <option value="in-progress">In Progress</option>
@@ -273,7 +302,6 @@ const handleStatusChange = async (ticket_id, newStatus) => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                 
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Title
                     </th>
@@ -303,7 +331,6 @@ const handleStatusChange = async (ticket_id, newStatus) => {
                       key={ticket._id}
                       className="hover:bg-gray-50 transition-colors"
                     >
-                 
                       <td className="px-4 py-3">
                         <span className="text-sm text-gray-900">
                           {ticket.title}
@@ -469,7 +496,7 @@ const handleStatusChange = async (ticket_id, newStatus) => {
           </div>
         )}
       </main>
-
+  )}
       {/* Modal */}
       {selectedTicket && (
         <div
@@ -485,7 +512,6 @@ const handleStatusChange = async (ticket_id, newStatus) => {
                 <h2 className="text-lg font-semibold text-gray-900">
                   {selectedTicket.title}
                 </h2>
-               
               </div>
               <button
                 onClick={() => setSelectedTicket(null)}

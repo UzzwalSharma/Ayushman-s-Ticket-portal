@@ -13,4 +13,20 @@ export default defineSchema({
     status: v.string(),          // open, in-progress, closed
     createdAt: v.number(),
   }),
+
+  admins: defineTable({
+    email: v.string(),
+    password: v.string(), // Hashing of password will be done later on
+ 
+  }).index("by_email", ["email"]),
+
+  //sessions management for admin authentication
+   sessions: defineTable({
+    token: v.string(),
+    createdAt: v.number(),
+    expiresAt: v.number(),
+  }).index("by_token", ["token"]),
 });
+
+
+

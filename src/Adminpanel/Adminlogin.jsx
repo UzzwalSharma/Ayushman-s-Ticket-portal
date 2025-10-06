@@ -1,16 +1,54 @@
 import React, { useState } from "react";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
 import { LogIn, ArrowRight, CheckCircle2 } from "lucide-react";
-import { useUser } from "@clerk/clerk-react";
+import { useMutation } from "convex/react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function AdminLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("adminLoggedIn")
+  );
+  const [error, setError] = useState("");
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
+
+  const login = useMutation("auth:login");
+  const navigate = useNavigate();
+
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    const res = await login({ email: email.trim(), password: password.trim() });
+
+    if (res.success) {
+      
+      localStorage.setItem("adminLoggedIn", "true");
+      localStorage.setItem("sessionToken", res.token);
+      setIsAuthenticated(true);
+      toast.success("Welcome back!");
+      navigate("/admindashboard");
+    } else {
+      toast.error(res.error || "Invalid email or password");
+      setPassword(""); // optional: clear password
+    }
+  } catch (err) {
+    toast.error(err?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminLoggedIn");
+    localStorage.removeItem("sessionToken");
+    setIsAuthenticated(false);
+  };
 
   return (
     <div className="min-h-screen h-screen flex flex-col bg-gray-50 overflow-hidden">
@@ -33,45 +71,20 @@ function AdminLogin() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <SignedOut>
-              <SignInButton mode="modal" redirectUrl="/AdminDashboard">
-                <button
-                  className="flex cursor-pointer items-center space-x-2 bg-yellow-400 text-gray-900 font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg hover:bg-yellow-500 transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-                  aria-label="Sign in to admin portal"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span className="hidden sm:inline">Admin Sign In</span>
-                </button>
-              </SignInButton>
-            </SignedOut>
-
-            <SignedIn>
-              <UserButton
-                afterSignOutUrl="/"
-                afterSignInUrl="/AdminDashboard"
-                afterSignUpUrl="/AdminDashboard"
-                appearance={{
-                  elements: {
-                    avatarBox:
-                      "w-9 h-9 sm:w-10 sm:h-10 border-2 border-yellow-400 ring-2 ring-yellow-400/20",
-                    userButtonPopoverCard: "shadow-2xl border border-gray-200",
-                    userButtonPopoverActionButton:
-                      "hover:bg-yellow-50 transition",
-                    userButtonPopoverActionButtonText:
-                      "text-gray-700 font-medium",
-                    userButtonPopoverFooter: "hidden",
-                  },
-                }}
-              />
-            </SignedIn>
-          </div>
+          {isAuthenticated && (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </header>
 
-      {/* Split Screen Layout */}
+      {/* Split Screen */}
       <main className="flex flex-1 h-full overflow-hidden">
-        {/* Left Image Section */}
+        {/* Left Image */}
         <div className="hidden lg:flex w-1/2 relative bg-white p-8 overflow-hidden">
           <div className="w-full h-full border-4 border-yellow-400 rounded-3xl overflow-hidden relative">
             <img
@@ -89,56 +102,62 @@ function AdminLogin() {
           </div>
         </div>
 
-        {/* Right Auth Section */}
+        {/* Right Form */}
         <div className="flex flex-col w-full lg:w-1/2 items-center justify-center p-6 sm:p-8 bg-gray-50 h-full overflow-hidden">
-          <SignedOut>
+          {!isAuthenticated ? (
             <div className="w-full max-w-md space-y-8">
-              {/* Welcome Message */}
               <div className="text-center">
                 <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
                   Welcome to{" "}
-                  <span className="text-yellow-500 block">
-                    Ayushman Solutions
-                  </span>
+                  <span className="text-yellow-500 block">Ayushman Solutions</span>
                 </h1>
                 <p className="text-gray-600 text-lg">Admin Portal</p>
               </div>
 
-              {/* Login Card */}
               <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10 border border-gray-200">
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg overflow-hidden">
-                    <img
-                      src="/logoart.png"
-                      alt="Ayushmaan Solutions Logo"
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        e.target.parentElement.innerHTML =
-                          '<span class="text-gray-900 font-black text-3xl">AS</span>';
-                      }}
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <div>
+                    <label className="block text-left text-sm font-medium text-gray-700">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
                     />
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                    Admin Sign In
-                  </h2>
-                  <p className="text-gray-600 text-sm sm:text-base">
-                    Manage employees & tickets
-                  </p>
-                </div>
-
-                <SignInButton mode="modal">
-                  <button className="w-full cursor-pointer flex items-center justify-center space-x-3 bg-yellow-400 text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-yellow-500 transition-all shadow-lg hover:shadow-xl group">
+                  <div>
+                    <label className="block text-left text-sm font-medium text-gray-700">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-yellow-500 focus:border-yellow-500"
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-red-500 text-sm font-medium">{error}</p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full cursor-pointer flex items-center justify-center space-x-3 bg-yellow-400 text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-yellow-500 transition-all shadow-lg hover:shadow-xl group ${
+                      loading ? "opacity-70 cursor-not-allowed" : ""
+                    }`}
+                  >
                     <LogIn className="w-5 h-5" />
-                    <span>Sign In to Continue</span>
+                    {loading ? "Signing In..." : "Sign In to Continue"}
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </button>
-                </SignInButton>
+                </form>
               </div>
             </div>
-          </SignedOut>
-
-          <SignedIn>
+          ) : (
             <div className="w-full max-w-md">
               <div className="bg-white rounded-2xl shadow-2xl p-10 sm:p-12 text-center border border-gray-200">
                 <div className="w-20 h-20 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
@@ -146,7 +165,7 @@ function AdminLogin() {
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-                  Welcome Back {user?.firstName || "Admin"}!
+                  Welcome Back!
                 </h2>
                 <p className="text-base sm:text-lg text-gray-600 mb-8">
                   Access the admin dashboard{" "}
@@ -156,17 +175,17 @@ function AdminLogin() {
                 </p>
 
                 <div className="space-y-3">
-                  <a
-                    href="/AdminDashboard"
+                  <button
+                    onClick={() => navigate("/admindashboard")}
                     className="w-full flex items-center justify-center space-x-2 bg-yellow-400 text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-yellow-500 transition-all shadow-lg hover:shadow-xl group focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
-          </SignedIn>
+          )}
         </div>
       </main>
     </div>

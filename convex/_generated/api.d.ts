@@ -14,10 +14,13 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as Fetchall from "../Fetchall.js";
+import type * as auth from "../auth.js";
 import type * as deleteTicket from "../deleteTicket.js";
 import type * as getMyTickets from "../getMyTickets.js";
+import type * as logout from "../logout.js";
 import type * as ticket from "../ticket.js";
 import type * as updateStatus from "../updateStatus.js";
+import type * as validatesession from "../validatesession.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -29,10 +32,13 @@ import type * as updateStatus from "../updateStatus.js";
  */
 declare const fullApi: ApiFromModules<{
   Fetchall: typeof Fetchall;
+  auth: typeof auth;
   deleteTicket: typeof deleteTicket;
   getMyTickets: typeof getMyTickets;
+  logout: typeof logout;
   ticket: typeof ticket;
   updateStatus: typeof updateStatus;
+  validatesession: typeof validatesession;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
