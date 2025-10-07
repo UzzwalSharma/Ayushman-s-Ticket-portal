@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   const ticketsQuery = useQuery("Fetchall:all");
   const tickets = ticketsQuery || [];
   const isLoading = ticketsQuery === undefined;
-  
+  const deleteTicket = useMutation("deleteTicket:deleteTicket");
   // Convex mutation
   const updateTicketStatus = useMutation("updateStatus:updateStatus");
 
@@ -187,6 +187,44 @@ export default function AdminDashboard() {
     // Redirect
     navigate("/");
   };
+
+//delete handler
+const handleDeleteTicket = async (ticket_id, ticketTitle) => {
+  const confirmToast = toast.loading(
+    <div>
+      <p className="font-medium">Delete "{ticketTitle}"?</p>
+      <p className="text-sm text-gray-600 mt-1">This action cannot be undone.</p>
+      <div className="flex gap-2 mt-3">
+        <button
+          onClick={async () => {
+            toast.dismiss(confirmToast);
+            try {
+              await deleteTicket({ id: ticket_id });
+              toast.success("Ticket deleted successfully!");
+              if (selectedTicket?._id === ticket_id) {
+                setSelectedTicket(null);
+              }
+            } catch (error) {
+              toast.error("Failed to delete ticket");
+              console.error("Failed to delete ticket:", error);
+            }
+          }}
+          className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+        >
+          Delete
+        </button>
+        <button
+          onClick={() => toast.dismiss(confirmToast)}
+          className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>,
+    { duration: Infinity }
+  );
+};
+
 
   return (
     <div className="min-h-screen bg-gray-200">
@@ -450,14 +488,23 @@ export default function AdminDashboard() {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <button
-                            onClick={() => setSelectedTicket(ticket)}
-                            className="text-gray-700 hover:text-gray-900 text-sm font-medium cursor-pointer flex items-center gap-1"
-                          >
-                            <Eye className="w-4 h-4" />
-                            View
-                          </button>
-                        </td>
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => setSelectedTicket(ticket)}
+      className="text-gray-700 hover:text-gray-900 text-sm font-medium cursor-pointer flex items-center gap-1"
+    >
+      <Eye className="w-4 h-4" />
+      View
+    </button>
+    <button
+      onClick={() => handleDeleteTicket(ticket._id, ticket.title)}
+      className="text-red-600 hover:text-red-800 text-sm font-medium cursor-pointer flex items-center gap-1"
+    >
+      <X className="w-4 h-4" />
+      Delete
+    </button>
+  </div>
+</td>
                       </tr>
                     ))}
                   </tbody>
