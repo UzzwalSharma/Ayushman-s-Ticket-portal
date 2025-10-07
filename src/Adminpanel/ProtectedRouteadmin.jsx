@@ -1,32 +1,29 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useQuery } from "convex/react";
+import { toast } from "react-hot-toast";
+import { api } from "/convex/_generated/api.js"; // ✅ import Convex API
 
 export default function ProtectedRoute({ children }) {
   const token = localStorage.getItem("sessionToken");
   const [loading, setLoading] = useState(true);
   const [isValid, setIsValid] = useState(false);
-  const [redirectMsg, setRedirectMsg] = useState("");
 
-  // Skip query if no token
-  const session = useQuery(
-    token ? "validatesession:validateSession" : null,
-    token ? { token } : undefined
-  );
+  // ✅ Correct way — skip query if token is missing
+  const session = useQuery(api.validatesession.validateSession, token ? { token } : "skip");
 
   useEffect(() => {
-    // No token stored
     if (!token) {
-      setRedirectMsg("No session found. Redirecting to login...");
+      toast.error("No session found. Please log in again.");
       setLoading(false);
       return;
     }
 
     if (session === undefined) return; // still loading
 
-    if (!session.valid) {
+    if (!session?.valid) {
       localStorage.removeItem("sessionToken");
-      setRedirectMsg("Session expired or invalid. Redirecting to login...");
+      toast.error("Session expired. Please log in again.");
     } else {
       setIsValid(true);
     }
@@ -39,12 +36,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!isValid) {
-    return (
-      <div className="text-white text-center mt-10">
-        {redirectMsg}
-        <Navigate to="/admin-login" replace />
-      </div>
-    );
+    return <Navigate to="/admin-login" replace />;
   }
 
   return children;
