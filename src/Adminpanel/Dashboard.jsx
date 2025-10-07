@@ -496,13 +496,13 @@ const handleDeleteTicket = async (ticket_id, ticketTitle) => {
       <Eye className="w-4 h-4" />
       View
     </button>
-    <button
+    {/* <button
       onClick={() => handleDeleteTicket(ticket._id, ticket.title)}
       className="text-red-600 hover:text-red-800 text-sm font-medium cursor-pointer flex items-center gap-1"
     >
-      <X className="w-4 h-4" />
+      <Trash className="w-4 h-4" />
       Delete
-    </button>
+    </button> */}
   </div>
 </td>
                       </tr>
