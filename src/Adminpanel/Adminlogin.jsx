@@ -3,7 +3,7 @@ import { LogIn, ArrowRight, CheckCircle2, ArrowRightFromLine } from "lucide-reac
 import { useMutation } from "convex/react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { div } from "framer-motion/client";
+
 
 function AdminLogin() {
   const [email, setEmail] = useState("");
